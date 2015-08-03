@@ -63,15 +63,22 @@ class Vehicle(dict):
 	
 	def get_data(self, data):
 		"""Get vehicle data"""
-		result = self.connection.get('vehicles/%i/data_request/%s' % (self['id'], data))
+		result = self.get('data_request/%s' % data)
 		return result['response']
 	
 	def wake(self):
 		"""Wake the vehicle"""
-		result = self.connection.post('vehicles/%i/wake_up' % self['id'])
-		return result
+		return self.post('wake_up')
 	
 	def command(self, name):
 		"""Run the command for the vehicle"""
-		result = self.connection.post('vehicles/%i/command/%s' % (self['id'], name))
-		return result
+		return self.post('command/%s' % name)
+	
+	def get(self, command):
+		"""Utility command to get data from API"""
+		return self.connection.get('vehicles/%i/%s' % (self['id'], command))
+	
+	def post(self, command):		
+		"""Utility command to post data to API"""
+		return self.connection.post('vehicles/%i/%s' % (self['id'], command))
+
