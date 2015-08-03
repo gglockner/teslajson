@@ -34,25 +34,33 @@ class Connection(object):
 			"client_secret" : client_secret,
 			"email" : email,
 			"password" : password }
-		r = requests.post("%s/oauth/token" % self.url, data=oauthit)
-		self.auth = r.json()
+		self.auth = self.__post("/oauth/token", data=oauthit)
 		self.head = {"Authorization": "Bearer %s" % self.auth['access_token']}
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
 	def get(self, command):
 		"""Utility command to get data from API"""
-		r = requests.get("%s%s%s" % (self.url, self.api, command), headers=self.head)
-		r.raise_for_status()
-		return r.json()
+		return self.__get("%s%s" % (self.api, command), headers=self.head)
 	
 	def post(self, command):
 		"""Utility command to post data to API"""
-		r = requests.post("%s%s%s" % (self.url, self.api, command), headers=self.head)
+		return self.__post("%s%s" % (self.api, command), headers=self.head)
+	
+	def __get(self, url, headers=None):
+		"""Raw GET command"""
+		r = requests.get("%s%s" % (self.url, url), headers=headers)
 		r.raise_for_status()
 		return r.json()
+	
+	def __post(self, url, headers=None, data=None):
+		"""Raw POST command"""
+		r = requests.post("%s%s" % (self.url, url), headers=headers, data=data)
+		r.raise_for_status()
+		return r.json()
+		
 
 class Vehicle(dict):
-	"""Vehicle class"""
+	"""Vehicle class, subclassed from dictionary"""
 	def __init__(self, data, connection):
 		"""Initialize vehicle class
 		
@@ -81,4 +89,3 @@ class Vehicle(dict):
 	def post(self, command):		
 		"""Utility command to post data to API"""
 		return self.connection.post('vehicles/%i/%s' % (self['id'], command))
-
