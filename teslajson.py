@@ -1,5 +1,14 @@
-## Simple Python class to access the Unofficial Tesla JSON API:
-## http://docs.timdorr.apiary.io/
+""" Simple Python class to access the Unofficial Tesla JSON API:
+http://docs.timdorr.apiary.io/
+
+To use:
+import teslajson
+c = teslajson.Connection('youremail', 'yourpassword')
+v = c.vehicles[0]
+v.wake()
+v.get_data('charge_state')
+v.command('charge_start')
+"""
 
 try: # Python 3
 	from urllib.parse import urlencode
@@ -20,7 +29,8 @@ class Connection(object):
 			client_secret = "c75f14bbadc8bee3a7594412c31416f8300256d7668ea7e6e7f06727bfb9d220"):
 		"""Initialize connection object
 		
-		Sets the vehicles field, a list of Vehicle objects associated with your account
+		Sets the vehicles field, a list of Vehicle objects
+		associated with your account
 
 		Required parameters:
 		email: your login for teslamotors.com
@@ -34,13 +44,13 @@ class Connection(object):
 		"""
 		self.url = url
 		self.api = api
-		oauthit = {
+		oauth = {
 			"grant_type" : "password",
 			"client_id" : client_id,
 			"client_secret" : client_secret,
 			"email" : email,
 			"password" : password }
-		self.auth = self.__open("/oauth/token", data=oauthit)
+		self.auth = self.__open("/oauth/token", data=oauth)
 		self.head = {"Authorization": "Bearer %s" % self.auth['access_token']}
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
