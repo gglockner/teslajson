@@ -42,9 +42,9 @@ class Connection(object):
 		"""Utility command to get data from API"""
 		return self.__get("%s%s" % (self.api, command), headers=self.head)
 	
-	def post(self, command):
+	def post(self, command, data=None):
 		"""Utility command to post data to API"""
-		return self.__post("%s%s" % (self.api, command), headers=self.head)
+		return self.__post("%s%s" % (self.api, command), headers=self.head, data=data)
 	
 	def __get(self, url, headers=None):
 		"""Raw GET command"""
