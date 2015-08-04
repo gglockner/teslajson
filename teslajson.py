@@ -1,9 +1,13 @@
-import urllib
-import urllib2
-import json
-
 ## Simple Python class to access the Unofficial Tesla JSON API:
 ## http://docs.timdorr.apiary.io/
+
+try: # Python 3
+	from urllib.parse import urlencode
+	from urllib.request import Request, urlopen
+except: # Python 2
+	from urllib import urlencode
+	from urllib2 import Request, urlopen
+import json
 
 class Connection(object):
 	"""Connection to Tesla Motors API"""
@@ -50,13 +54,17 @@ class Connection(object):
 	
 	def __open(self, url, headers={}, data=None):
 		"""Raw urlopen command"""
-		req = urllib2.Request("%s%s" % (self.url, url), headers=headers)
+		req = Request("%s%s" % (self.url, url), headers=headers)
 		try:
-			req.add_data(urllib.urlencode(data))
+			req.data = urlencode(data).encode('utf-8') # Python 3
 		except:
-			pass
-		resp = urllib2.urlopen(req)
-		return json.loads(resp.read())
+			try:
+				req.add_data(urlencode(data)) # Python 2
+			except:
+				pass
+		resp = urlopen(req)
+		charset = resp.info().get('charset', 'utf-8')
+		return json.loads(resp.read().decode(charset))
 		
 
 class Vehicle(dict):
