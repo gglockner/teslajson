@@ -1,4 +1,6 @@
-import requests
+import urllib
+import urllib2
+import json
 
 ## Simple Python class to access the Unofficial Tesla JSON API:
 ## http://docs.timdorr.apiary.io/
@@ -42,21 +44,27 @@ class Connection(object):
 		"""Utility command to get data from API"""
 		return self.__get("%s%s" % (self.api, command), headers=self.head)
 	
-	def post(self, command, data=None):
+	def post(self, command, data={}):
 		"""Utility command to post data to API"""
 		return self.__post("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __get(self, url, headers=None):
+	def __get(self, url, headers={}):
 		"""Raw GET command"""
-		r = requests.get("%s%s" % (self.url, url), headers=headers)
-		r.raise_for_status()
-		return r.json()
+		return self.__open(url, headers)
 	
-	def __post(self, url, headers=None, data=None):
+	def __post(self, url, headers={}, data={}):
 		"""Raw POST command"""
-		r = requests.post("%s%s" % (self.url, url), headers=headers, data=data)
-		r.raise_for_status()
-		return r.json()
+		return self.__open(url, headers, data)
+
+	def __open(self, url, headers={}, data=None):
+		"""Raw urlopen command"""
+		req = urllib2.Request("%s%s" % (self.url, url), headers=headers)
+		try:
+			req.add_data(urllib.urlencode(data))
+		except:
+			pass
+		resp = urllib2.urlopen(req)
+		return json.loads(resp.read())
 		
 
 class Vehicle(dict):
