@@ -36,26 +36,18 @@ class Connection(object):
 			"client_secret" : client_secret,
 			"email" : email,
 			"password" : password }
-		self.auth = self.__post("/oauth/token", data=oauthit)
+		self.auth = self.__open("/oauth/token", data=oauthit)
 		self.head = {"Authorization": "Bearer %s" % self.auth['access_token']}
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
 	def get(self, command):
 		"""Utility command to get data from API"""
-		return self.__get("%s%s" % (self.api, command), headers=self.head)
+		return self.__open("%s%s" % (self.api, command), headers=self.head)
 	
 	def post(self, command, data={}):
 		"""Utility command to post data to API"""
-		return self.__post("%s%s" % (self.api, command), headers=self.head, data=data)
+		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __get(self, url, headers={}):
-		"""Raw GET command"""
-		return self.__open(url, headers)
-	
-	def __post(self, url, headers={}, data={}):
-		"""Raw POST command"""
-		return self.__open(url, headers, data)
-
 	def __open(self, url, headers={}, data=None):
 		"""Raw urlopen command"""
 		req = urllib2.Request("%s%s" % (self.url, url), headers=headers)
