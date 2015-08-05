@@ -14,8 +14,8 @@ The class is designed to be simple.  You initialize a _Connection_
 object, retrieve the list of _Vehicle_ objects, then perform get/set
 methods on a _Vehicle_.  There is a single get method
 [_Vehicle.get\_data()_] and a single set method [_Vehicle.command()_] so
-that the class should not changes when there are updates in the
-underlying JSON API.
+that the class does not require changes when there are minor updates
+to the underlying JSON API.
 
 This has been tested with Python 2.7 and Python 3.2.  It has no dependencies
 beyond the standard Python libraries.
