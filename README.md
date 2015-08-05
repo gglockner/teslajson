@@ -10,11 +10,11 @@ vehicle, control charge settings, turn on the air conditioning, and
 more.  You can also embed this into other programs to automate these
 controls.
 
-The class is designed to be simple.  You initialize a `Connection`
-object, retrieve the list of `Vehicle` objects, then perform get/set
-methods on a `Vehicle`.  There is a single get method
-(`Vehicle.get_data()`) and a single set method (`Vehicle.command()`) so
-that the class does not need to be updated when there are changes in the
+The class is designed to be simple.  You initialize a _Connection_
+object, retrieve the list of _Vehicle_ objects, then perform get/set
+methods on a _Vehicle_.  There is a single get method
+[_Vehicle.get\_data()_] and a single set method [_Vehicle.command()_] so
+that the class should not changes when there are updates in the
 underlying JSON API.
 
 This has been tested with Python 2.7 and Python 3.2.  It has no dependencies
@@ -46,21 +46,21 @@ Optional parameters:
 vehicles associated with your account on teslamotors.com.
 
 `Vehicle`: The vehicle class is a subclass of a Python dictionary
-(`dict`).  A `Vehicle` object contains fields that identify your
-vehicle, such as the Vehicle Identification Number (`Vehicle['vin']`). 
+(_dict_).  A _Vehicle_ object contains fields that identify your
+vehicle, such as the Vehicle Identification Number (_Vehicle['vin']_). 
 All standard dictionary methods are supported.
 
 `Vehicle.wake()`: Wake the vehicle.
 
-`Vehicle.get_data(name)`: Retrieve data values specified by `name`.
-Returns a dictionary (`dict`).  Examples for `name`: `charge_state`,
-`climate_state`, `vehicle_state`.  For a full list of name values, see
-the `GET` commands in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
+`Vehicle.get_data(name)`: Retrieve data values specified by _name_, such
+as _charge\_state_, _climate\_state_, _vehicle\_state_. Returns a
+dictionary (_dict_).  For a full list of _name_ values, see the _GET_
+commands in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
 
-`Vehicle.command(name)`: Execute the command specified by `name`.
-Returns a dictionary (`dict`).  Examples for `name`:
-`charge_port_door_open`, `charge_max_range`. For a full list of names,
-see the `POST` commands in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
+`Vehicle.command(name)`: Execute the command specified by _name_, such
+as _charge\_port\_door\_open_, _charge\_max\_range_. Returns a
+dictionary (_dict_).  For a full list of  _name_ values, see the _POST_ commands
+in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
 
 ## Example
 	import teslajson
