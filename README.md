@@ -17,7 +17,8 @@ methods on a `Vehicle`.  There is a single get method
 that the class does not need to be updated when there are changes in the
 underlying JSON API.
 
-This has been tested with Python 2.7 and Python 3.2.
+This has been tested with Python 2.7 and Python 3.2.  It has no dependencies
+beyond the standard Python libraries.
 
 ## Installation
 0. Download the repository zip file and uncompress it
