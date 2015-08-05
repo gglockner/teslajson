@@ -1,7 +1,8 @@
-""" Simple Python class to access the Unofficial Tesla JSON API:
+""" Simple Python class to access the Tesla JSON API:
 http://docs.timdorr.apiary.io/
 
-To use:
+Example:
+
 import teslajson
 c = teslajson.Connection('youremail', 'yourpassword')
 v = c.vehicles[0]
@@ -78,7 +79,12 @@ class Connection(object):
 		
 
 class Vehicle(dict):
-	"""Vehicle class, subclassed from dictionary"""
+	"""Vehicle class, subclassed from dictionary.
+	
+	There are 3 primary methods: wake, get_data and command.
+	get_data and command both require a name to specify the data
+	or command, respectively. These names can be found in the
+	Tesla JSON API."""
 	def __init__(self, data, connection):
 		"""Initialize vehicle class
 		
@@ -87,9 +93,9 @@ class Vehicle(dict):
 		super(Vehicle, self).__init__(data)
 		self.connection = connection
 	
-	def get_data(self, data):
+	def get_data(self, name):
 		"""Get vehicle data"""
-		result = self.get('data_request/%s' % data)
+		result = self.get('data_request/%s' % name)
 		return result['response']
 	
 	def wake(self):
