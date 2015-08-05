@@ -4,10 +4,18 @@ Simple Python class to access the Tesla JSON API.
 Written by Greg Glockner
 
 ## Description
-This is a simple Python interface to the [Tesla JSON API](http://docs.timdorr.apiary.io/).
-With this, you can query your vehicle, control charge settings, turn on the air
-conditioning, and more.  You can also embed this into other programs to automate these
+This is a simple Python interface to the [Tesla JSON
+API](http://docs.timdorr.apiary.io/). With this, you can query your
+vehicle, control charge settings, turn on the air conditioning, and
+more.  You can also embed this into other programs to automate these
 controls.
+
+The class is designed to be simple.  You initialize a `Connection`
+object, retrieve the list of `Vehicle` objects, then perform get/set
+methods on a `Vehicle`.  There is a single get method
+(`Vehicle.get_data()`) and a single set method (`Vehicle.command()`) so
+that the class does not need to be updated when there are changes in the
+underlying JSON API.
 
 This has been tested with Python 2.7 and Python 3.2.
 
@@ -33,8 +41,8 @@ Optional parameters:
 - _client\_id_: API identifier
 - _client\_secret_: Secret API identifier
 
-`Connection.vehicles`: A list of Vehicle objects, corresponding to the vehicles associated
-with your account on teslamotors.com.
+`Connection.vehicles`: A list of Vehicle objects, corresponding to the
+vehicles associated with your account on teslamotors.com.
 
 `Vehicle`: The vehicle class is a subclass of a Python dictionary
 (`dict`).  A `Vehicle` object contains fields that identify your
