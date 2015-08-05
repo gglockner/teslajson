@@ -69,6 +69,10 @@ see the `POST` commands in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
 	v.get_data('charge_state')
 	v.command('charge_start')
 
+## Credits
+Many thanks to [Tim Dorr](http://timdorr.com) for documenting the Tesla JSON API.
+This would not be possible without his work.
+
 ## Disclaimer
 This software is provided as-is.  This software is not supported by or
 endorsed by Tesla Motors.  Tesla Motors does not publicly support the
