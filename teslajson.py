@@ -1,4 +1,7 @@
-""" Simple Python class to access the Tesla JSON API:
+""" Simple Python class to access the Tesla JSON API
+https://github.com/gglockner/teslajson
+
+The Tesla JSON API is described at:
 http://docs.timdorr.apiary.io/
 
 Example:
@@ -6,8 +9,8 @@ Example:
 import teslajson
 c = teslajson.Connection('youremail', 'yourpassword')
 v = c.vehicles[0]
-v.wake()
-v.get_data('charge_state')
+v.wake_up()
+v.data_request('charge_state')
 v.command('charge_start')
 """
 
@@ -93,12 +96,12 @@ class Vehicle(dict):
 		super(Vehicle, self).__init__(data)
 		self.connection = connection
 	
-	def get_data(self, name):
+	def data_request(self, name):
 		"""Get vehicle data"""
 		result = self.get('data_request/%s' % name)
 		return result['response']
 	
-	def wake(self):
+	def wake_up(self):
 		"""Wake the vehicle"""
 		return self.post('wake_up')
 	

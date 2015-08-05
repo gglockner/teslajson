@@ -50,9 +50,9 @@ vehicles associated with your account on teslamotors.com.
 vehicle, such as the Vehicle Identification Number (_Vehicle['vin']_). 
 All standard dictionary methods are supported.
 
-`Vehicle.wake()`: Wake the vehicle.
+`Vehicle.wake_up()`: Wake the vehicle.
 
-`Vehicle.get_data(name)`: Retrieve data values specified by _name_, such
+`Vehicle.data_request(name)`: Retrieve data values specified by _name_, such
 as _charge\_state_, _climate\_state_, _vehicle\_state_. Returns a
 dictionary (_dict_).  For a full list of _name_ values, see the _GET_
 commands in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
@@ -66,8 +66,8 @@ in the [Tesla JSON API](http://docs.timdorr.apiary.io/).
 	import teslajson
 	c = teslajson.Connection('youremail', 'yourpassword')
 	v = c.vehicles[0]
-	v.wake()
-	v.get_data('charge_state')
+	v.wake_up()
+	v.data_request('charge_state')
 	v.command('charge_start')
 
 ## Credits
