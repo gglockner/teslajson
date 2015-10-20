@@ -25,8 +25,9 @@ import json
 class Connection(object):
 	"""Connection to Tesla Motors API"""
 	def __init__(self,
-			email,
-			password,
+			email='',
+			password='',
+			access_token='',
 			url="https://owner-api.teslamotors.com",
 			api="/api/1/",
 			client_id = "e4a9949fcfa04068f59abb5a658f2bac0a3428e4652315490b659d5ab3f35a9e",
@@ -41,6 +42,7 @@ class Connection(object):
 		password: your password for teslamotors.com
 		
 		Optional parameters:
+		access_token: API access token
 		url: base URL for the API
 		api: API string
 		client_id: API identifier
@@ -48,14 +50,17 @@ class Connection(object):
 		"""
 		self.url = url
 		self.api = api
-		oauth = {
-			"grant_type" : "password",
-			"client_id" : client_id,
-			"client_secret" : client_secret,
-			"email" : email,
-			"password" : password }
-		self.auth = self.__open("/oauth/token", data=oauth)
-		self.head = {"Authorization": "Bearer %s" % self.auth['access_token']}
+		if not access_token:
+			oauth = {
+				"grant_type" : "password",
+				"client_id" : client_id,
+				"client_secret" : client_secret,
+				"email" : email,
+				"password" : password }
+			auth = self.__open("/oauth/token", data=oauth)
+			access_token = auth['access_token']
+		self.access_token = access_token
+		self.head = {"Authorization": "Bearer %s" % self.access_token}
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
 	def get(self, command):
@@ -84,8 +89,8 @@ class Connection(object):
 class Vehicle(dict):
 	"""Vehicle class, subclassed from dictionary.
 	
-	There are 3 primary methods: wake, get_data and command.
-	get_data and command both require a name to specify the data
+	There are 3 primary methods: wake_up, data_request and command.
+	data_request and command both require a name to specify the data
 	or command, respectively. These names can be found in the
 	Tesla JSON API."""
 	def __init__(self, data, connection):
