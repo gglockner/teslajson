@@ -110,14 +110,14 @@ class Vehicle(dict):
 		"""Wake the vehicle"""
 		return self.post('wake_up')
 	
-	def command(self, name):
+	def command(self, name, data={}):
 		"""Run the command for the vehicle"""
-		return self.post('command/%s' % name)
+		return self.post('command/%s' % name, data)
 	
 	def get(self, command):
 		"""Utility command to get data from API"""
 		return self.connection.get('vehicles/%i/%s' % (self['id'], command))
 	
-	def post(self, command):		
+	def post(self, command, data={}):
 		"""Utility command to post data to API"""
-		return self.connection.post('vehicles/%i/%s' % (self['id'], command))
+		return self.connection.post('vehicles/%i/%s' % (self['id'], command), data)
