@@ -28,10 +28,8 @@ class Connection(object):
 			email='',
 			password='',
 			access_token='',
-			url="https://owner-api.teslamotors.com",
-			api="/api/1/",
-			client_id = "e4a9949fcfa04068f59abb5a658f2bac0a3428e4652315490b659d5ab3f35a9e",
-			client_secret = "c75f14bbadc8bee3a7594412c31416f8300256d7668ea7e6e7f06727bfb9d220"):
+			baseurl="https://owner-api.teslamotors.com",
+			api="/api/1/"):
 		"""Initialize connection object
 		
 		Sets the vehicles field, a list of Vehicle objects
@@ -43,18 +41,20 @@ class Connection(object):
 		
 		Optional parameters:
 		access_token: API access token
-		url: base URL for the API
+		baseurl: base URL for the API
 		api: API string
-		client_id: API identifier
-		client_secret: Secret API identifier
 		"""
-		self.url = url
+		self.baseurl = baseurl
 		self.api = api
 		if not access_token:
+			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
+			current_client = tesla_client['v1']
+			self.baseurl = current_client['baseurl']
+			self.api = current_client['api']
 			oauth = {
 				"grant_type" : "password",
-				"client_id" : client_id,
-				"client_secret" : client_secret,
+				"client_id" : current_client['id'],
+				"client_secret" : current_client['secret'],
 				"email" : email,
 				"password" : password }
 			auth = self.__open("/oauth/token", data=oauth)
@@ -71,9 +71,11 @@ class Connection(object):
 		"""Utility command to post data to API"""
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __open(self, url, headers={}, data=None):
+	def __open(self, url, headers={}, data=None, baseurl=""):
 		"""Raw urlopen command"""
-		req = Request("%s%s" % (self.url, url), headers=headers)
+		if not baseurl:
+			baseurl = self.baseurl
+		req = Request("%s%s" % (baseurl, url), headers=headers)
 		try:
 			req.data = urlencode(data).encode('utf-8') # Python 3
 		except:
