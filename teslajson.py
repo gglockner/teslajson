@@ -21,6 +21,8 @@ except: # Python 2
 	from urllib import urlencode
 	from urllib2 import Request, urlopen
 import json
+import datetime
+import calendar
 
 class Connection(object):
 	"""Connection to Tesla Motors API"""
@@ -46,30 +48,38 @@ class Connection(object):
 		"""
 		self.baseurl = baseurl
 		self.api = api
+		self.expiration = float('inf')
+		self.__sethead(access_token)
 		if not access_token:
 			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
 			current_client = tesla_client['v1']
 			self.baseurl = current_client['baseurl']
 			self.api = current_client['api']
-			oauth = {
+			self.oauth = {
 				"grant_type" : "password",
 				"client_id" : current_client['id'],
 				"client_secret" : current_client['secret'],
 				"email" : email,
 				"password" : password }
-			auth = self.__open("/oauth/token", data=oauth)
-			access_token = auth['access_token']
-		self.access_token = access_token
-		self.head = {"Authorization": "Bearer %s" % self.access_token}
+			self.expiration = 0 # force refresh
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
 	def get(self, command):
 		"""Utility command to get data from API"""
-		return self.__open("%s%s" % (self.api, command), headers=self.head)
+		return self.post(command, None)
 	
 	def post(self, command, data={}):
 		"""Utility command to post data to API"""
+		now = calendar.timegm(datetime.datetime.now().timetuple())
+		if now > self.expiration:
+			auth = self.__open("/oauth/token", data=self.oauth)
+			self.expiration = auth['created_at'] + auth['expires_in'] - 86400
+			self.__sethead(auth['access_token'])
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
+	
+	def __sethead(self, access_token):
+		"""Set HTTP header"""
+		self.head = {"Authorization": "Bearer %s" % access_token}
 	
 	def __open(self, url, headers={}, data=None, baseurl=""):
 		"""Raw urlopen command"""
