@@ -30,6 +30,7 @@ class Connection(object):
 			email='',
 			password='',
 			access_token='',
+			expiration = float('inf'),
 			baseurl="https://owner-api.teslamotors.com",
 			api="/api/1/"):
 		"""Initialize connection object
@@ -48,8 +49,7 @@ class Connection(object):
 		"""
 		self.baseurl = baseurl
 		self.api = api
-		self.expiration = float('inf')
-		self.__sethead(access_token)
+		self.__sethead(access_token, expiration)
 		if not access_token:
 			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
 			current_client = tesla_client['v1']
@@ -73,12 +73,14 @@ class Connection(object):
 		now = calendar.timegm(datetime.datetime.now().timetuple())
 		if now > self.expiration:
 			auth = self.__open("/oauth/token", data=self.oauth)
-			self.expiration = auth['created_at'] + auth['expires_in'] - 86400
-			self.__sethead(auth['access_token'])
+			self.__sethead(auth['access_token'],
+						   auth['created_at'] + auth['expires_in'] - 86400)
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __sethead(self, access_token):
+	def __sethead(self, access_token, expiration):
 		"""Set HTTP header"""
+		self.access_token = access_token
+		self.expiration = expiration
 		self.head = {"Authorization": "Bearer %s" % access_token}
 	
 	def __open(self, url, headers={}, data=None, baseurl=""):
