@@ -74,7 +74,7 @@ class Connection(object):
 		if now > self.expiration:
 			auth = self.__open("/oauth/token", data=self.oauth)
 			self.__sethead(auth['access_token'],
-						   auth['created_at'] + auth['expires_in'] - 86400)
+			               auth['created_at'] + auth['expires_in'] - 86400)
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
 	def __sethead(self, access_token, expiration):
