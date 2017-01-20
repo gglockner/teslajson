@@ -29,10 +29,7 @@ class Connection(object):
 	def __init__(self,
 			email='',
 			password='',
-			access_token='',
-			expiration = float('inf'),
-			baseurl="https://owner-api.teslamotors.com",
-			api="/api/1/"):
+			access_token=''):
 		"""Initialize connection object
 		
 		Sets the vehicles field, a list of Vehicle objects
@@ -44,17 +41,14 @@ class Connection(object):
 		
 		Optional parameters:
 		access_token: API access token
-		baseurl: base URL for the API
-		api: API string
 		"""
-		self.baseurl = baseurl
-		self.api = api
-		self.__sethead(access_token, expiration)
-		if not access_token:
-			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
-			current_client = tesla_client['v1']
-			self.baseurl = current_client['baseurl']
-			self.api = current_client['api']
+		tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
+		current_client = tesla_client['v1']
+		self.baseurl = current_client['baseurl']
+		self.api = current_client['api']
+		if access_token:
+			self.__sethead(access_token)
+		else:
 			self.oauth = {
 				"grant_type" : "password",
 				"client_id" : current_client['id'],
@@ -77,7 +71,7 @@ class Connection(object):
 			               auth['created_at'] + auth['expires_in'] - 86400)
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __sethead(self, access_token, expiration):
+	def __sethead(self, access_token, expiration=float('inf')):
 		"""Set HTTP header"""
 		self.access_token = access_token
 		self.expiration = expiration

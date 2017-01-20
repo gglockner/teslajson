@@ -37,9 +37,7 @@ Required parameters:
 
 Optional parameters:
 
-- _access\_token_: the session access token; requires baseurl and API
-- _baseurl_: the URL required by the Tesla Motors JSON service
-- _api_: the API string required by the Tesla Motors JSON service
+- _access\_token_: the session access token
 
 `Connection.vehicles`: A list of Vehicle objects, corresponding to the
 vehicles associated with your account on teslamotors.com.
