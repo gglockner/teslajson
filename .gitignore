@@ -4,3 +4,6 @@ profile
 
 *.pyc
 build/
+teslajson.egg-info/
+dist/
+MANIFEST

@@ -17,14 +17,14 @@ methods on a _Vehicle_.  There is a single get method
 that the class does not require changes when there are minor updates
 to the underlying JSON API.
 
-This has been tested with Python 2.7 and Python 3.2.  It has no dependencies
+This has been tested with Python 2.7 and Python 3.5.  It has no dependencies
 beyond the standard Python libraries.
 
 ## Installation
 0. Download the repository zip file and uncompress it
 0. Run the following command with your Python interpreter: `python setup.py install`
 
-Alternately, add the teslajson.py code in your own program.
+Alternately, add the teslajson.py code to your program.
 
 ## Public API
 `Connection(email, password, **kwargs)`:
@@ -37,10 +37,9 @@ Required parameters:
 
 Optional parameters:
 
-- _url_: the base URL for the API
-- _api_: API string
-- _client\_id_: API identifier
-- _client\_secret_: Secret API identifier
+- _access\_token_: the session access token; requires baseurl and API
+- _baseurl_: the URL required by the Tesla Motors JSON service
+- _api_: the API string required by the Tesla Motors JSON service
 
 `Connection.vehicles`: A list of Vehicle objects, corresponding to the
 vehicles associated with your account on teslamotors.com.

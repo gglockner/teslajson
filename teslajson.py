@@ -24,6 +24,8 @@ except: # Python 2
 	from urllib2 import HTTPBasicAuthHandler, ProxyHandler, HTTPHandler
 	from urllib2 import install_opener, build_opener
 import json
+import datetime
+import calendar
 
 class Connection(object):
 	"""Connection to Tesla Motors API"""
@@ -31,13 +33,12 @@ class Connection(object):
 			email='',
 			password='',
 			access_token='',
-			url="https://owner-api.teslamotors.com",
-			api="/api/1/",
-			client_id = "e4a9949fcfa04068f59abb5a658f2bac0a3428e4652315490b659d5ab3f35a9e",
-			client_secret = "c75f14bbadc8bee3a7594412c31416f8300256d7668ea7e6e7f06727bfb9d220",
 			proxy_url = None,
 			proxy_user = None,
-			proxy_password = None):
+			proxy_password = None,
+			expiration = float('inf'),
+			baseurl="https://owner-api.teslamotors.com",
+			api="/api/1/"):
 		"""Initialize connection object
 		
 		Sets the vehicles field, a list of Vehicle objects
@@ -49,40 +50,53 @@ class Connection(object):
 		
 		Optional parameters:
 		access_token: API access token
-		url: base URL for the API
+		baseurl: base URL for the API
 		api: API string
-		client_id: API identifier
-		client_secret: Secret API identifier
 		"""
-		self.url = url
+		self.baseurl = baseurl
 		self.api = api
 		self.proxy_url = proxy_url
 		self.proxy_user = proxy_user
 		self.proxy_password = proxy_password
+		self.__sethead(access_token, expiration)
 		if not access_token:
-			oauth = {
+			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
+			current_client = tesla_client['v1']
+			self.baseurl = current_client['baseurl']
+			self.api = current_client['api']
+			self.oauth = {
 				"grant_type" : "password",
-				"client_id" : client_id,
-				"client_secret" : client_secret,
+				"client_id" : current_client['id'],
+				"client_secret" : current_client['secret'],
 				"email" : email,
 				"password" : password }
-			auth = self.__open("/oauth/token", data=oauth)
-			access_token = auth['access_token']
-		self.access_token = access_token
-		self.head = {"Authorization": "Bearer %s" % self.access_token}
+			self.expiration = 0 # force refresh
 		self.vehicles = [Vehicle(v, self) for v in self.get('vehicles')['response']]
 	
 	def get(self, command):
 		"""Utility command to get data from API"""
-		return self.__open("%s%s" % (self.api, command), headers=self.head)
+		return self.post(command, None)
 	
 	def post(self, command, data={}):
 		"""Utility command to post data to API"""
+		now = calendar.timegm(datetime.datetime.now().timetuple())
+		if now > self.expiration:
+			auth = self.__open("/oauth/token", data=self.oauth)
+			self.__sethead(auth['access_token'],
+			               auth['created_at'] + auth['expires_in'] - 86400)
 		return self.__open("%s%s" % (self.api, command), headers=self.head, data=data)
 	
-	def __open(self, url, headers={}, data=None):
+	def __sethead(self, access_token, expiration):
+		"""Set HTTP header"""
+		self.access_token = access_token
+		self.expiration = expiration
+		self.head = {"Authorization": "Bearer %s" % access_token}
+	
+	def __open(self, url, headers={}, data=None, baseurl=""):
 		"""Raw urlopen command"""
-		req = Request("%s%s" % (self.url, url), headers=headers)
+		if not baseurl:
+			baseurl = self.baseurl
+		req = Request("%s%s" % (baseurl, url), headers=headers)
 		try:
 			req.data = urlencode(data).encode('utf-8') # Python 3
 		except:
