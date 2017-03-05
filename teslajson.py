@@ -17,14 +17,20 @@ v.command('charge_start')
 try: # Python 3
 	from urllib.parse import urlencode
 	from urllib.request import Request, urlopen
+	from urllib.request import ProxyHandler, build_opener, HTTPBasicAuthHandler, HTTPHandler
 except: # Python 2
 	from urllib import urlencode
 	from urllib2 import Request, urlopen
+	from urllib2 import HTTPBasicAuthHandler, ProxyHandler, HTTPHandler
+	from urllib2 import install_opener, build_opener
 import json
 
 class Connection(object):
 	"""Connection to Tesla Motors API"""
 	def __init__(self,
+			proxy_url = None,
+			proxy_user = None,
+			proxy_password = None,
 			email='',
 			password='',
 			access_token='',
@@ -50,6 +56,9 @@ class Connection(object):
 		"""
 		self.url = url
 		self.api = api
+		self.proxy_url = proxy_url
+		self.proxy_user = proxy_user
+		self.proxy_password = proxy_password
 		if not access_token:
 			oauth = {
 				"grant_type" : "password",
@@ -81,7 +90,20 @@ class Connection(object):
 				req.add_data(urlencode(data)) # Python 2
 			except:
 				pass
-		resp = urlopen(req)
+
+		# Proxy support
+		if self.proxy_url is not None:
+			if self.proxy_user is None:
+				handler = ProxyHandler({'https': self.proxy_url})
+				opener = build_opener(handler)
+			else:
+				proxy = ProxyHandler({'https': 'https://%s:%s@%s' % (self.proxy_user,
+																	 self.proxy_password, self.proxy_url)})
+				auth = HTTPBasicAuthHandler()
+				opener = build_opener(proxy, auth, HTTPHandler)
+			resp = opener.open(req)
+		else:
+			resp = urlopen(req)
 		charset = resp.info().get('charset', 'utf-8')
 		return json.loads(resp.read().decode(charset))
 		
