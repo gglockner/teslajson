@@ -93,7 +93,6 @@ class Connection(object):
 
 		# Proxy support
 		if self.proxy_url is not None:
-			print "RSM have proxy url: %s" % self.proxy_url
 			if self.proxy_user is None:
 				handler = ProxyHandler({'https': self.proxy_url})
 				opener = build_opener(handler)
