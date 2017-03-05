@@ -28,16 +28,16 @@ import json
 class Connection(object):
 	"""Connection to Tesla Motors API"""
 	def __init__(self,
-			proxy_url = None,
-			proxy_user = None,
-			proxy_password = None,
 			email='',
 			password='',
 			access_token='',
 			url="https://owner-api.teslamotors.com",
 			api="/api/1/",
 			client_id = "e4a9949fcfa04068f59abb5a658f2bac0a3428e4652315490b659d5ab3f35a9e",
-			client_secret = "c75f14bbadc8bee3a7594412c31416f8300256d7668ea7e6e7f06727bfb9d220"):
+			client_secret = "c75f14bbadc8bee3a7594412c31416f8300256d7668ea7e6e7f06727bfb9d220",
+			proxy_url = None,
+			proxy_user = None,
+			proxy_password = None):
 		"""Initialize connection object
 		
 		Sets the vehicles field, a list of Vehicle objects
@@ -93,6 +93,7 @@ class Connection(object):
 
 		# Proxy support
 		if self.proxy_url is not None:
+			print "RSM have proxy url: %s" % self.proxy_url
 			if self.proxy_user is None:
 				handler = ProxyHandler({'https': self.proxy_url})
 				opener = build_opener(handler)
