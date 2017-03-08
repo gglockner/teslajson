@@ -17,9 +17,12 @@ v.command('charge_start')
 try: # Python 3
 	from urllib.parse import urlencode
 	from urllib.request import Request, urlopen
+	from urllib.request import ProxyHandler, build_opener, HTTPBasicAuthHandler, HTTPHandler
 except: # Python 2
 	from urllib import urlencode
 	from urllib2 import Request, urlopen
+	from urllib2 import HTTPBasicAuthHandler, ProxyHandler, HTTPHandler
+	from urllib2 import install_opener, build_opener
 import json
 import datetime
 import calendar
@@ -30,6 +33,9 @@ class Connection(object):
 			email='',
 			password='',
 			access_token='',
+			proxy_url = None,
+			proxy_user = None,
+			proxy_password = None,
 			expiration = float('inf'),
 			baseurl="https://owner-api.teslamotors.com",
 			api="/api/1/"):
@@ -49,6 +55,9 @@ class Connection(object):
 		"""
 		self.baseurl = baseurl
 		self.api = api
+		self.proxy_url = proxy_url
+		self.proxy_user = proxy_user
+		self.proxy_password = proxy_password
 		self.__sethead(access_token, expiration)
 		if not access_token:
 			tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
@@ -95,7 +104,20 @@ class Connection(object):
 				req.add_data(urlencode(data)) # Python 2
 			except:
 				pass
-		resp = urlopen(req)
+
+		# Proxy support
+		if self.proxy_url is not None:
+			if self.proxy_user is None:
+				handler = ProxyHandler({'https': self.proxy_url})
+				opener = build_opener(handler)
+			else:
+				proxy = ProxyHandler({'https': 'https://%s:%s@%s' % (self.proxy_user,
+																	 self.proxy_password, self.proxy_url)})
+				auth = HTTPBasicAuthHandler()
+				opener = build_opener(proxy, auth, HTTPHandler)
+			resp = opener.open(req)
+		else:
+			resp = urlopen(req)
 		charset = resp.info().get('charset', 'utf-8')
 		return json.loads(resp.read().decode(charset))
 		
