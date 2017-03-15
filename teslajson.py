@@ -16,10 +16,12 @@ v.command('charge_start')
 
 try: # Python 3
 	from urllib.parse import urlencode
-	from urllib.request import Request, urlopen
+	from urllib.request import Request, urlopen, build_opener
+	from urllib.request import ProxyHandler, HTTPBasicAuthHandler, HTTPHandler
 except: # Python 2
 	from urllib import urlencode
-	from urllib2 import Request, urlopen
+	from urllib2 import Request, urlopen, build_opener
+	from urllib2 import ProxyHandler, HTTPBasicAuthHandler, HTTPHandler
 import json
 import datetime
 import calendar
@@ -29,7 +31,10 @@ class Connection(object):
 	def __init__(self,
 			email='',
 			password='',
-			access_token=''):
+			access_token='',
+			proxy_url = '',
+			proxy_user = '',
+			proxy_password = ''):
 		"""Initialize connection object
 		
 		Sets the vehicles field, a list of Vehicle objects
@@ -41,7 +46,13 @@ class Connection(object):
 		
 		Optional parameters:
 		access_token: API access token
+		proxy_url: URL for proxy server
+		proxy_user: username for proxy server
+		proxy_password: password for proxy server
 		"""
+		self.proxy_url = proxy_url
+		self.proxy_user = proxy_user
+		self.proxy_password = proxy_password
 		tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
 		current_client = tesla_client['v1']
 		self.baseurl = current_client['baseurl']
@@ -89,7 +100,21 @@ class Connection(object):
 				req.add_data(urlencode(data)) # Python 2
 			except:
 				pass
-		resp = urlopen(req)
+
+		# Proxy support
+		if self.proxy_url:
+			if self.proxy_user:
+				proxy = ProxyHandler({'https': 'https://%s:%s@%s' % (self.proxy_user,
+																	 self.proxy_password,
+																	 self.proxy_url)})
+				auth = HTTPBasicAuthHandler()
+				opener = build_opener(proxy, auth, HTTPHandler)
+			else:
+				handler = ProxyHandler({'https': self.proxy_url})
+				opener = build_opener(handler)
+		else:
+			opener = build_opener()
+		resp = opener.open(req)
 		charset = resp.info().get('charset', 'utf-8')
 		return json.loads(resp.read().decode(charset))
 		
