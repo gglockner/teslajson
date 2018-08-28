@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.3
+- Removed API and baseurl from constructor; added proxy support
+
 ## Version 1.2
 - Refactored to keep sessions persistent and refresh according to the values returned
 by the server
