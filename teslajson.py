@@ -56,7 +56,7 @@ class Connection(object):
 		tesla_client = self.__open("/raw/0a8e0xTJ", baseurl="http://pastebin.com")
 		current_client = tesla_client['v1']
 		self.baseurl = current_client['baseurl']
-		if not self.baseurl.startswith('https:') or not self.baseurl.endswith(('teslamotors.com','tesla.com')):
+		if not self.baseurl.startswith('https:') or not self.baseurl.endswith(('.teslamotors.com','.tesla.com')):
 			raise IOError("Unexpected URL (%s) from pastebin" % self.baseurl)
 		self.api = current_client['api']
 		if access_token:
