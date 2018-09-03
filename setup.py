@@ -4,7 +4,7 @@ from codecs import open
 from os import path
 
 setup(name='teslajson',
-      version='1.3.0',
+      version='1.3.1',
       description='',
       url='https://github.com/gglockner/teslajson',
       py_modules=['teslajson'],
